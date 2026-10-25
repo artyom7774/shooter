@@ -2,6 +2,8 @@ from PIL import Image, ImageEnhance
 
 from src.player import Player
 
+from src.net.menu import OnlineMenu
+
 from src.variables import *
 from src.ui import *
 
@@ -352,11 +354,19 @@ class Render:
 
         # MAIN
 
-        self.startGameButton = Button(self.game, (0, 0, 0, 0), (*Color.PLAYER_COLOR, 60), (*Color.PLAYER_COLOR, 120), (self.game.width // 2 - 150, 160, 300, 80), "Play", Color.PLAYER_COLOR, function=lambda: self.game.game(), font_color=Color.PLAYER_COLOR)
+        self.startGameButton = Button(self.game, (0, 0, 0, 0), (*Color.PLAYER_COLOR, 60), (*Color.PLAYER_COLOR, 120), (self.game.width // 2 - 150, 160, 300, 80), "Play", Color.PLAYER_COLOR, function=lambda: toPlayMode(self.game), font_color=Color.PLAYER_COLOR)
         self.upgradeButton = Button(self.game, (0, 0, 0, 0), (*Color.PLAYER_COLOR, 60), (*Color.PLAYER_COLOR, 120), (self.game.width // 2 - 150, 260, 300, 80), "Upgrades", Color.PLAYER_COLOR, function=lambda: toUpgradeMenu(self.game), font_color=Color.PLAYER_COLOR)
         self.helpButton = Button(self.game, (0, 0, 0, 0), (*Color.PLAYER_COLOR, 60), (*Color.PLAYER_COLOR, 120), (self.game.width // 2 - 150, 360, 300, 80), "Help", Color.PLAYER_COLOR, function=lambda: toHelpMenu(self.game), font_color=Color.PLAYER_COLOR)
         self.statsButton = Button(self.game, (0, 0, 0, 0), (*Color.PLAYER_COLOR, 60), (*Color.PLAYER_COLOR, 120), (self.game.width // 2 - 150, 460, 300, 80), "Stats", Color.PLAYER_COLOR, function=lambda: print(3), font_color=Color.PLAYER_COLOR)
         self.exitButton = Button(self.game, (0, 0, 0, 0), (*Color.PLAYER_COLOR, 60), (*Color.PLAYER_COLOR, 120), (self.game.width // 2 - 150, 460, 300, 80), "Exit", Color.PLAYER_COLOR, function=lambda: self.game.exit(), font_color=Color.PLAYER_COLOR)
+
+        # MODE
+
+        self.modeOfflineButton = Button(self.game, (0, 0, 0, 0), (*Color.PLAYER_COLOR, 60), (*Color.PLAYER_COLOR, 120), (self.game.width // 2 - 150, 160, 300, 80), "Single", Color.PLAYER_COLOR, function=lambda: self.game.startOffline(), font_color=Color.PLAYER_COLOR)
+        self.modeOnlineButton = Button(self.game, (0, 0, 0, 0), (*Color.PLAYER_COLOR, 60), (*Color.PLAYER_COLOR, 120), (self.game.width // 2 - 150, 260, 300, 80), "Server", Color.PLAYER_COLOR, function=lambda: self.onlineMenu.open(), font_color=Color.PLAYER_COLOR)
+        self.modeBackButton = Button(self.game, (0, 0, 0, 0), (*Color.PLAYER_COLOR, 60), (*Color.PLAYER_COLOR, 120), (self.game.width // 2 - 150, 360, 300, 80), "Back", Color.PLAYER_COLOR, function=lambda: toMainMenu2(self.game), font_color=Color.PLAYER_COLOR)
+
+        self.onlineMenu = OnlineMenu(self.game)
 
         self.gameNameLabel = Label(self.game, [0, 0, self.game.width, 140], NAME, font_size=80)
         self.gameVersionLabel = Label(self.game, [5, self.game.height - 30, self.game.width, 25], VERSION, font_size=16)
@@ -438,6 +448,9 @@ class Render:
             self.scoreCount.draw()
 
         self.gameExitButton.draw(self.game.width - 60, self.game.height - 60)
+
+        if self.game.online:
+            self.game.world.draw()
 
         if self.game.pause and self.game.menu == "play":
             self.printPauseLabel.draw()
@@ -542,6 +555,28 @@ class Render:
         self.gameNameLabel.draw()
         self.gameVersionLabel.draw()
 
+    def mode(self):
+        self.game.pause = False
+
+        self.background()
+
+        self.modeOfflineButton.draw()
+        self.modeOnlineButton.draw()
+        self.modeBackButton.draw()
+
+        self.gameNameLabel.draw()
+        self.gameVersionLabel.draw()
+
+    def online(self):
+        self.game.pause = False
+
+        self.background()
+
+        self.onlineMenu.draw()
+
+        self.gameNameLabel.draw()
+        self.gameVersionLabel.draw()
+
 
 def toUpgradeMenu(game):
     game.menu = "upgrade"
@@ -553,3 +588,11 @@ def toHelpMenu(game):
 
 def toMainMenu(game):
     game.player.over()
+
+
+def toPlayMode(game):
+    game.menu = "mode"
+
+
+def toMainMenu2(game):
+    game.menu = "main"

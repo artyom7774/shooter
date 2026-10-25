@@ -1,6 +1,5 @@
 import pygame
 import random
-import noise
 import math
 
 NOISE_PARAMS = {
@@ -15,6 +14,8 @@ NOISE_PARAMS = {
 
 
 def background():
+    import noise
+
     array = []
 
     for y in range(NOISE_PARAMS["height"]):

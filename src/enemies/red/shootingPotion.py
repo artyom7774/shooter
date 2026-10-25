@@ -16,8 +16,8 @@ class EnemyShootingPotionRed(Enemy):
     def update(self):
         super().update()
 
-        distance = math.sqrt((self.game.player.x - self.x) ** 2 + (self.game.player.y - self.y) ** 2)
-        angle = math.degrees(math.atan2(self.game.player.y - self.y, self.game.player.x - self.x))
+        distance = math.sqrt((self.target.x - self.x) ** 2 + (self.target.y - self.y) ** 2)
+        angle = math.degrees(math.atan2(self.target.y - self.y, self.target.x - self.x))
 
         speed = 2 - 400 / distance
         speed = min(5, abs(speed)) * (1 if speed >= 0 else -1)
@@ -25,13 +25,13 @@ class EnemyShootingPotionRed(Enemy):
         self.vectors.append([angle, self.speed * speed, 0, [1, 0]])
 
         if distance / 800 < 1.2 and self.timer % 300 == 0:
-            self.game.objects.append(Bullet(self.game, self.x, self.y, Color.ENEMY_COLOR_RED, ENEMY_BULLET_RADIUS, 1, 2, self.game.player, "enemy", 100, 5, 0, random.randint(-5, 5), onDeath=lambda x, y: self.create(x, y)))
+            self.game.objects.append(Bullet(self.game, self.x, self.y, Color.ENEMY_COLOR_RED, ENEMY_BULLET_RADIUS, 1, 2, self.target, "enemy", 100, 5, 0, random.randint(-5, 5), onDeath=lambda x, y: self.create(x, y)))
 
     def draw(self):
         cx = int(self.x - self.game.camera.x + self.game.width // 2)
         cy = int(self.y - self.game.camera.y + self.game.height // 2)
 
-        angle = math.degrees(math.atan2(self.y - self.game.player.y, self.x - self.game.player.x))
+        angle = math.degrees(math.atan2(self.y - self.target.y, self.x - self.target.x))
 
         points = []
 
@@ -46,4 +46,4 @@ class EnemyShootingPotionRed(Enemy):
         pygame.draw.polygon(self.game.screen, self.color, points, 1)
 
     def create(self, x, y):
-        self.game.objects.append(Bullet(self.game, x, y, (*Color.ENEMY_COLOR_RED, 40), 7 * ENEMY_BULLET_RADIUS, 0, 0, self.game.player, "enemy", 300, 5, 0, alreadyDied=False, damageCD=60))
+        self.game.objects.append(Bullet(self.game, x, y, (*Color.ENEMY_COLOR_RED, 40), 7 * ENEMY_BULLET_RADIUS, 0, 0, self.target, "enemy", 300, 5, 0, alreadyDied=False, damageCD=60))

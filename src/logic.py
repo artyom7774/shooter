@@ -11,6 +11,9 @@ class Logic:
         if self.game.pause:
             return
 
+        if self.game.online:
+            self.game.world.update()
+
         for obj in self.game.objects:
             obj.update()
 
@@ -19,7 +22,10 @@ class Logic:
 
         self.game.spawn.update()
 
-        self.enemyesCollisions()
+        if not self.game.online:
+            self.enemyesCollisions()
+
+        self.dronesCollisions()
 
     def enemyesCollisions(self):
         def binaryLeft(objects, x: float) -> int:
@@ -74,6 +80,10 @@ class Logic:
                     enemies[index].vectors.append([math.degrees(angle) + 180, force, 0.5])
                     enemy.vectors.append([math.degrees(angle), force, 0.5])
 
+    def dronesCollisions(self):
+        if self.game.player is None:
+            return
+
         for i in range(len(self.game.player.drones)):
             for j in range(i + 1, len(self.game.player.drones)):
                 dx = self.game.player.drones[i].x - self.game.player.drones[j].x
@@ -101,6 +111,12 @@ class Logic:
             obj.update()
 
     def main(self):
+        pass
+
+    def mode(self):
+        pass
+
+    def online(self):
         pass
 
     def help(self):

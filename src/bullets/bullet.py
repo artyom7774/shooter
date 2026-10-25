@@ -38,6 +38,9 @@ class Bullet(Entity):
 
         self.init()
 
+        if self.type == "player" and self.game.net is not None:
+            self.game.net.onLocalBullet(self)
+
     def init(self):
         if self.target is not None:
             self.angle = math.degrees(math.atan2(self.target.y - self.y, self.target.x - self.x)) + self.deviation
@@ -47,6 +50,9 @@ class Bullet(Entity):
 
     def update(self):
         super().update()
+
+        if self.target is not None and self.type == "enemy":
+            self.target = None
 
         if self.target is not None:
             px = self.speed * math.cos(math.radians(self.angle))
@@ -75,18 +81,19 @@ class Bullet(Entity):
         self.cd -= 1
 
         if self.type == "enemy":
-            obj = self.game.player
+            for obj in self.game.targets():
+                if math.sqrt((self.x - obj.x) ** 2 + (self.y - obj.y) ** 2) <= self.radius + obj.radius + 1 and self.cd <= 0:
+                    self.cd = self.damageCD
 
-            if math.sqrt((self.x - obj.x) ** 2 + (self.y - obj.y) ** 2) <= self.radius + obj.radius + (5 if self.type == "player" else 1) and self.cd <= 0:
-                self.cd = self.damageCD
+                    obj.getDamage(self.damage)
 
-                obj.getDamage(self.damage)
+                    if self in self.game.objects and self.alreadyDied:
+                        if self.onDeath is not None:
+                            self.onDeath(self.x, self.y)
 
-                if self in self.game.objects and self.alreadyDied:
-                    if self.onDeath is not None:
-                        self.onDeath(self.x, self.y)
+                        self.game.objects.remove(self)
 
-                    self.game.objects.remove(self)
+                    break
 
         if self.type == "player":
             for obj in self.game.objects:

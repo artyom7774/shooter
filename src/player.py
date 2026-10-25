@@ -204,7 +204,7 @@ class Player(Entity):
     def getExperience(self, xp):
         self.xp[0] += xp * self.experienceMultiply
 
-        self.score += math.ceil(PLAYER_POINTS_MULTIPLY * xp * self.pointsMultiply * math.log2(self.game.spawn.wave))
+        self.score += math.ceil(PLAYER_POINTS_MULTIPLY * xp * self.pointsMultiply * math.log2(max(1, self.game.spawn.wave)))
         self.game.render.scoreCount.text = f"Points: {self.game.player.score}"
 
         if self.xp[0] >= self.xp[1]:

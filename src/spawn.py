@@ -1,7 +1,5 @@
 from src.enemy import Enemy
 
-from src.drone import MiningDrone
-
 from src.variables import *
 
 from src.enemies import *
@@ -177,6 +175,9 @@ class Spawn:
             self.enemyes[enemy["class"]] = enemy
 
     def update(self):
+        if self.game.online:
+            return
+
         count = len(list(filter(lambda obj: isinstance(obj, Enemy), self.game.objects)))
 
         self.timerToNewWave -= 1
@@ -191,25 +192,27 @@ class Spawn:
         self.game.objects.append(enemy["class"](self.game, x, y, Color.ENEMY_COLOR_RED, enemy["stats"]["radius"], 1, math.sqrt(math.log2(self.wave) / 1.618 + 1), [int(enemy["stats"]["health"][0] * (1 + self.wave / ENEMYES_PROGRESSION_MYLTIPLY)), int(enemy["stats"]["health"][1] * (1 + self.wave / ENEMYES_PROGRESSION_MYLTIPLY))], int(enemy["stats"]["damage"] * (1 + self.wave / ENEMYES_PROGRESSION_MYLTIPLY)), enemy["stats"]["xp"]))
 
     def position(self):
-        x = self.game.player.x
-        y = self.game.player.y
+        players = self.game.targets()
 
-        while math.sqrt((self.game.player.x - x) ** 2 + (self.game.player.y - y) ** 2) < 250:
-            x = random.randint(-2 * self.game.width, 2 * self.game.width) + self.game.player.x
-            y = random.randint(-2 * self.game.height, 2 * self.game.height) + self.game.player.y
+        center = random.choice(players)
+
+        x = center.x
+        y = center.y
+
+        while math.sqrt((center.x - x) ** 2 + (center.y - y) ** 2) < 250:
+            x = random.randint(-2 * self.game.width, 2 * self.game.width) + center.x
+            y = random.randint(-2 * self.game.height, 2 * self.game.height) + center.y
 
         return [x, y]
 
     def next(self):
         self.wave += 1
-        self.game.render.waveCount.text = f"Wave: {self.game.spawn.wave}"
 
-        self.game.player.armor[0] = self.game.player.armor[1]
-
-        if self.game.player.armorIsOpened:
-            self.game.render.armorBar.setValue(self.game.player.armor[0] / self.game.player.armor[1])
+        self.game.onNewWave(self.wave)
 
         points = math.ceil((self.points * WAVE_BOSS_POINTS_CAPACITY if (self.wave % 5 == 0 and self.wave >= 10) else self.points) * random.uniform(*WAVE_RANDOM_POINTS_CAPACITY))
+        points = math.ceil(points * self.game.difficulty())
+
         self.points *= WAVE_NEXT_CAPACITY
 
         if self.wave % 5 == 0 and self.wave >= 10:
@@ -242,9 +245,3 @@ class Spawn:
             self.spawn(*self.position(), enemy)
 
             points -= enemy["point"]
-
-        if self.wave % 10 == 0 and self.wave and self.game.data["upgrades"]["moreWeaponSlots"]:
-            self.game.player.weaponsMaxCount += 1
-
-        if self.wave % 5 == 0 and self.wave and self.game.data["upgrades"]["miningDronesForWaves"]:
-            self.game.player.getDrone(MiningDrone(self.game.player, self.game), True)

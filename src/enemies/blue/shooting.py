@@ -17,8 +17,8 @@ class EnemyShootingBlue(Enemy):
     def update(self):
         super().update()
 
-        distance = math.sqrt((self.game.player.x - self.x) ** 2 + (self.game.player.y - self.y) ** 2)
-        angle = math.degrees(math.atan2(self.game.player.y - self.y, self.game.player.x - self.x))
+        distance = math.sqrt((self.target.x - self.x) ** 2 + (self.target.y - self.y) ** 2)
+        angle = math.degrees(math.atan2(self.target.y - self.y, self.target.x - self.x))
 
         speed = 3 - 400 / distance
         speed = min(5, abs(speed)) * (1 if speed >= 0 else -1)
@@ -26,13 +26,13 @@ class EnemyShootingBlue(Enemy):
         self.vectors.append([angle, self.speed * speed, 0, [1, 0]])
 
         if distance / 500 < 1.2 and self.timer % 20 == 0:
-            self.game.objects.append(Bullet(self.game, self.x, self.y, Color.ENEMY_COLOR_BLUE, ENEMY_BULLET_RADIUS, 1, 3, self.game.player, "enemy", 300, 5, 0))
+            self.game.objects.append(Bullet(self.game, self.x, self.y, Color.ENEMY_COLOR_BLUE, ENEMY_BULLET_RADIUS, 1, 3, self.target, "enemy", 300, 5, 0))
 
     def draw(self):
         cx = int(self.x - self.game.camera.x + self.game.width // 2)
         cy = int(self.y - self.game.camera.y + self.game.height // 2)
 
-        angle = math.degrees(math.atan2(self.y - self.game.player.y, self.x - self.game.player.x))
+        angle = math.degrees(math.atan2(self.y - self.target.y, self.x - self.target.x))
 
         points = []
 

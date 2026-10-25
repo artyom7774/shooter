@@ -1,7 +1,7 @@
 from src.background import NOISE_PARAMS, background
 
 NAME = "Ascension Protocol"
-VERSION = "v1.2.0"
+VERSION = "v1.3.0"
 
 
 class Color:

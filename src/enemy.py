@@ -23,8 +23,12 @@ class Enemy(Entity):
 
         self.history = {}
 
+        self.id = 0
+
+        self.target = self.game.nearestPlayer(self.x, self.y)
+
     def getDamage(self, damage, type: int = 0):
-        type = random.randint(1, 1e18) if type == 0 else type
+        type = random.randint(1, 10 ** 18) if type == 0 else type
 
         if self.history.get(type, -1) >= 0:
             return False
@@ -34,7 +38,7 @@ class Enemy(Entity):
         self.health[0] -= damage
 
         if self.health[0] <= 0 and self in self.game.objects:
-            self.game.player.getExperience(self.xp)
+            self.game.onEnemyKilled(self)
 
             if hasattr(self, "onDeath"):
                 self.onDeath()
@@ -58,10 +62,13 @@ class Enemy(Entity):
     def update(self):
         super().update()
 
+        self.target = self.game.nearestPlayer(self.x, self.y)
+
         for key in self.history:
             self.history[key] -= 1
 
-        self.game.particles.append(Particle(self.game, self.x, self.y, self.color, 3, priority=0))
+        if not self.game.headless:
+            self.game.particles.append(Particle(self.game, self.x, self.y, self.color, 3, priority=0))
 
     def draw(self):
         super().draw()

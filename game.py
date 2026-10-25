@@ -1,6 +1,7 @@
 from src.particle import Particles
 
 from src.drone.resource import Resource
+from src.drone import MiningDrone
 
 from src.entity import Entity
 from src.player import Player
@@ -9,6 +10,10 @@ from src.render import Render
 from src.audio import Audio
 from src.logic import Logic
 from src.spawn import Spawn
+
+from src.net.client import NetClient
+from src.net.world import World
+from src.net.protocol import DEFAULT_PORT
 
 from src.variables import *
 from src.ui import *
@@ -99,9 +104,12 @@ class Data:
 class Game:
     bwidth = 1080
     bheight = 720
+
     capacity = 1
 
-    def __init__(self):
+    headless = False
+
+    def __init__(self, server=None, name=None, online=False):
         self.width = self.bwidth
         self.height = self.bheight
 
@@ -113,7 +121,13 @@ class Game:
         self.display = pygame.display.set_mode((self.width, self.height), pygame.RESIZABLE)
 
         self.settings = json.load(open("files/settings.json", "r", encoding="utf-8"))
-        
+
+        self.net = None
+        self.online = False
+        self.world = None
+
+        self.network(server, name, online)
+
         pygame.init()
 
         self.clock = pygame.time.Clock()
@@ -151,6 +165,75 @@ class Game:
         self.resources = []
 
         # self.game()
+
+    def network(self, server, name, online):
+        settings = self.settings.get("online", {})
+
+        host = settings.get("host", "127.0.0.1")
+        port = settings.get("port", DEFAULT_PORT)
+
+        if server:
+            host, _, value = server.partition(":")
+
+            port = int(value) if value else DEFAULT_PORT
+
+        self.net = NetClient(self, host, port, name or settings.get("name", "Player"))
+        self.net.enabled = bool(online or settings.get("enabled", False))
+
+        self.online = False
+        self.world = None
+
+    def toggleOnline(self):
+        self.net.enabled = not self.net.enabled
+
+    def targets(self):
+        return [self.player]
+
+    def nearestPlayer(self, x, y):
+        return self.player
+
+    def difficulty(self):
+        return 1
+
+    def onEnemyKilled(self, enemy):
+        self.player.getExperience(enemy.xp)
+
+    def onNewWave(self, wave):
+        self.render.waveCount.text = f"Wave: {wave}"
+
+        self.player.armor[0] = self.player.armor[1]
+
+        if self.player.armorIsOpened:
+            self.render.armorBar.setValue(self.player.armor[0] / self.player.armor[1])
+
+        if wave % 10 == 0 and wave and self.data["upgrades"]["moreWeaponSlots"]:
+            self.player.weaponsMaxCount += 1
+
+        if wave % 5 == 0 and wave and self.data["upgrades"]["miningDronesForWaves"]:
+            self.player.getDrone(MiningDrone(self.player, self), True)
+
+    def leaveOnline(self, wait=False):
+        if self.online:
+            self.online = False
+
+            self.net.leave(wait)
+
+        self.world = None
+
+    def startOffline(self):
+        self.net.enabled = False
+
+        self.startGame()
+
+    def startGame(self):
+        self.game()
+
+        if self.net.enabled:
+            self.online = True
+
+            self.world = World(self)
+
+            self.net.join()
 
     def resize(self, width, height):
         self.width = width
@@ -207,6 +290,8 @@ class Game:
                 self.resources.append(Resource(self, x, y, generate["name"], generate["radius"], generate["width"], generate["color"]))
 
     def game(self):
+        self.leaveOnline()
+
         self.init()
 
         self.menu = "play"
@@ -219,6 +304,8 @@ class Game:
         self.logic = Logic(self)
 
     def exit(self):
+        self.leaveOnline(wait=True)
+
         self.data["points"] += self.player.score
         self.data.save()
 
@@ -228,7 +315,7 @@ class Game:
         while True:
             self.fpsc += 1
 
-            self.clock.tick(self.fps)
+            self.clock.tick(15 if self.menu == "help" else self.fps)
 
             self.click = [0] * 5
 
@@ -238,6 +325,9 @@ class Game:
                 if event.type == pygame.QUIT:
                     self.exit()
 
+                if self.menu == "online":
+                    self.render.onlineMenu.event(event)
+
                 if event.type == pygame.VIDEORESIZE:
                     self.resize(event.w, event.h)
 
@@ -245,7 +335,7 @@ class Game:
                     self.click[event.button - 1] = True
 
                 if event.type == pygame.KEYDOWN:
-                    if self.menu == "play" and (event.key == pygame.K_ESCAPE or event.key == pygame.K_p):
+                    if self.menu == "play" and (event.key == pygame.K_ESCAPE or event.key == pygame.K_p) and not self.online:
                         self.pause = (1 - self.pause)
 
                     if self.menu == "choosing" and event.key == pygame.K_1:
@@ -294,7 +384,7 @@ class Game:
 
             self.pauseAfter -= 1
 
-            if self.pauseAfter == 0:
+            if self.pauseAfter == 0 and not self.online:
                 self.pause = True
 
             prec = (random.randint(-4, 4), random.randint(-4, 4)) if self.player.playerGetDamageCD > 0 and self.menu == "play" else (0, 0)

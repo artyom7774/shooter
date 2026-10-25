@@ -1,0 +1,2 @@
+PYINSTALLER:
+pyinstaller.exe -F -w game.spec
