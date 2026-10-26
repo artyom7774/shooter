@@ -255,7 +255,8 @@ class Game:
 
         self.generate()
 
-        # self.objects.append(BossShooting(self, 100, 100, Color.ENEMY_COLOR, 20, 1, 2, [200, 200], 5, 5))
+        # from src.bosses import BossShootingTwo
+        # self.objects.append(BossShootingTwo(self, 100, 100, (255, 0, 0), 20, 1, 2, [200, 200], 5, 5))
 
     def generate(self):
         self.resources = []
