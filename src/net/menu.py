@@ -13,7 +13,7 @@ def parseAddress(text):
     host, _, value = text.rpartition(":") if ":" in text else (text, "", "")
 
     if not host:
-        raise ValueError("Enter server address, e.g. 192.168.0.10:3000")
+        raise ValueError("Enter server address, e.g. 192.168.0.10:3951")
 
     if " " in host:
         raise ValueError("Address must not contain spaces")

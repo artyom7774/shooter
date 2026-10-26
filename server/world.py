@@ -35,7 +35,7 @@ class Config:
         self.maxPlayers = MAX_PLAYERS
         self.timeout = PLAYER_TIMEOUT
 
-        self.difficulty = 0.25
+        self.difficulty = 0.5
 
         for key, value in kwargs.items():
             if value is not None:

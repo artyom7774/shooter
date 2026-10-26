@@ -1,9 +1,9 @@
-from src.bosses import *
 from src.enemies import *
+from src.bosses import *
 
 PROTOCOL_VERSION = 1
 
-DEFAULT_PORT = 3000
+DEFAULT_PORT = 3951
 
 TICK_RATE = 60
 SEND_RATE = 60
@@ -39,7 +39,7 @@ ENEMY_TYPES = [
 ENEMY_INDEX = {cls: index for index, cls in enumerate(ENEMY_TYPES)}
 
 PLAYER_COLORS = [
-    (245, 245, 245), (110, 200, 255), (255, 200, 90), (120, 255, 140), (240, 110, 210), (255, 130, 90), (170, 140, 255), (90, 230, 210)
+    (110, 200, 255), (255, 200, 90), (120, 255, 140), (240, 110, 210), (255, 130, 90), (170, 140, 255), (90, 230, 210)
 ] * 10
 
 

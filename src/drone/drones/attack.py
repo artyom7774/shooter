@@ -11,7 +11,7 @@ import math
 
 class AttackDrone(Drone):
     def __init__(self, player, game):
-        Drone.__init__(self, game, player.x + random.randint(-100, 100), player.y + random.randint(-100, 100), 5, 1, Color.DRONE_MINING_COLOR)
+        Drone.__init__(self, game, player.x + random.randint(-100, 100), player.y + random.randint(-100, 100), 5, 1, Color.DRONE_ATTACK_COLOR)
 
         self.damageCD = 0
 

@@ -183,9 +183,6 @@ class Game:
         self.online = False
         self.world = None
 
-    def toggleOnline(self):
-        self.net.enabled = not self.net.enabled
-
     def targets(self):
         return [self.player]
 

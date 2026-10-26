@@ -78,7 +78,7 @@ SPAWNED_ENEMIES = [
     },
     {
         "point": 8,
-        "chance": 0.5,
+        "chance": 0.35,
         "class": EnemyDividedSecondRed,
         "stats": {
             "health": [10, 10],
