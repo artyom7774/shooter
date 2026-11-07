@@ -6,8 +6,8 @@ import math
 
 
 class EnemyDividedSecondRed(Enemy):
-    def __init__(self, game, x, y, color, radius, width, speed, health, damage, xp):
-        Enemy.__init__(self, game, x, y, color, radius, width, speed, health, damage, xp)
+    def __init__(self, game, x, y, color, radius, width, speed, health, damage, xp, **kwargs):
+        Enemy.__init__(self, game, x, y, color, radius, width, speed, health, damage, xp, **kwargs)
 
     def update(self):
         super().update()
@@ -21,5 +21,5 @@ class EnemyDividedSecondRed(Enemy):
             self.target.getDamage(self.damage, target=self)
 
     def onDeath(self):
-        for _ in range(3):
+        for _ in range(3 + 2 * self.settings["essence"]):
             self.game.spawn.spawn(self.x + random.randint(-5, 5), self.y + random.randint(-5, 5), self.game.spawn.enemyes[EnemyDividedThirdRed])

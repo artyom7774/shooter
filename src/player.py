@@ -58,7 +58,8 @@ class Player(Entity):
         self.score = 0
 
         self.resources = {
-            "crystal": 0
+            "crystal": 0,
+            "essence": 0
         }
 
         self.upgrades = {
@@ -72,7 +73,12 @@ class Player(Entity):
 
         self.clazz = None
 
+        self.movingCD = 0
+
         self.autoAttackEnabled = True
+
+        self.essenceSpawnChance = 0
+        self.essenceSpawnChancePerWave = 0
 
         self.weaponsActive = 1
         self.weaponsTypesOpened = False
@@ -243,6 +249,8 @@ class Player(Entity):
         for resource, count in self.resources.items():
             self.game.data[resource] += int(count)
 
+        self.game.data.save()
+
         self.score = 0
 
         self.game.game()
@@ -273,6 +281,8 @@ class Player(Entity):
     def move(self, angle, capacity: int = 1):
         self.vectors.append([angle, capacity * self.speed * self.speedMultiply * (1.1 if self.game.data["upgrades"]["speedWithStamina"] and self.stamina[0] == self.stamina[1] else 1), 1e9])
 
+        self.movingCD = 2
+
     def update(self):
         super().update()
 
@@ -288,11 +298,17 @@ class Player(Entity):
         if self.armorIsOpened:
             self.game.render.armorBar.setValue(self.armor[0] / self.armor[1])
 
+            if self.clazz == "cursed":
+                self.armor[0] = 0
+
         if self.staminaIsOpened:
             self.game.render.staminaBar.setValue(self.stamina[0] / self.stamina[1])
 
-        for weapon in self.weapons.values():
-            weapon["attackCD"] -= 1
+        self.movingCD -= 1
+
+        if self.clazz != "sniper" or self.movingCD <= 0:
+            for weapon in self.weapons.values():
+                weapon["attackCD"] -= 1
 
         if any([(weapon["active"] and weapon["attackCD"] <= 0) for weapon in self.weapons.values()]):
             if self.autoAttackEnabled and not self.game.press[0]:
@@ -330,22 +346,22 @@ class Player(Entity):
         angle = math.degrees(math.atan2(self.game.mouse[1] - self.game.height // 2, self.game.mouse[0] - self.game.width // 2))
 
         if self.weapons["base"]["active"] and self.weapons["base"]["attackCD"] <= 0:
-            self.game.objects.append(Bullet(self.game, self.x, self.y, Color.PLAYER_COLOR, PLAYER_BULLET_RADIUS, 1, self.bulletsSpeed, target, "player", 300, self.weaponGetDamage(self.weapons["base"]), 0.001, angle if target is None else 0, another={"type": "base"}))
+            self.game.objects.append(Bullet(self.game, self.x, self.y, Color.PLAYER_COLOR, PLAYER_BULLET_RADIUS, 1, self.bulletsSpeed, target, "player", 300, self.weaponGetDamage(self.weapons["base"]), 0.0015, angle if target is None else 0, another={"type": "base"}))
 
             self.weapons["base"]["attackCD"] = self.weaponGetSpeed(self.weapons["base"])
 
         if self.weapons["shotgun"]["active"] and self.weapons["shotgun"]["attackCD"] <= 0:
-            self.game.objects.append(Bullet(self.game, self.x, self.y, Color.PLAYER_COLOR, PLAYER_BULLET_RADIUS + 2, 1, self.bulletsSpeed, target, "player", 300, self.weaponGetDamage(self.weapons["shotgun"]), 0.001, angle if target is None else 0, another={"type": "shotgun"}))
+            self.game.objects.append(Bullet(self.game, self.x, self.y, Color.PLAYER_COLOR, PLAYER_BULLET_RADIUS + 2, 1, self.bulletsSpeed, target, "player", 300, self.weaponGetDamage(self.weapons["shotgun"]), 0.0015, angle if target is None else 0, another={"type": "shotgun"}))
 
             self.weapons["shotgun"]["attackCD"] = self.weaponGetSpeed(self.weapons["shotgun"])
 
         if self.weapons["machineGun"]["active"] and self.weapons["machineGun"]["attackCD"] <= 0:
-            self.game.objects.append(Bullet(self.game, self.x, self.y, Color.PLAYER_COLOR, PLAYER_BULLET_RADIUS - 2, 1, self.bulletsSpeed, target, "player", 300, self.weaponGetDamage(self.weapons["machineGun"]), 0.001, angle if target is None else 0, another={"type": "machine-gun"}))
+            self.game.objects.append(Bullet(self.game, self.x, self.y, Color.PLAYER_COLOR, PLAYER_BULLET_RADIUS - 2, 1, self.bulletsSpeed, target, "player", 300, self.weaponGetDamage(self.weapons["machineGun"]), 0.0015, angle if target is None else 0, another={"type": "machine-gun"}))
 
             self.weapons["machineGun"]["attackCD"] = self.weaponGetSpeed(self.weapons["machineGun"])
 
         if self.weapons["explosive"]["active"] and self.weapons["explosive"]["attackCD"] <= 0:
-            self.game.objects.append(Bullet(self.game, self.x, self.y, Color.PLAYER_COLOR, PLAYER_BULLET_RADIUS + 1, 1, 0, None, "player", 1000, self.weaponGetDamage(self.weapons["explosive"]), 0.001, angle if target is None else 0, another={"type": "explosive"}))
+            self.game.objects.append(Bullet(self.game, self.x, self.y, Color.PLAYER_COLOR, PLAYER_BULLET_RADIUS + 1, 1, 0, None, "player", 1000, self.weaponGetDamage(self.weapons["explosive"]), 0.0015, angle if target is None else 0, another={"type": "explosive"}))
 
             self.weapons["explosive"]["attackCD"] = self.weaponGetSpeed(self.weapons["explosive"])
 
@@ -366,11 +382,16 @@ class Player(Entity):
 
                 self.weapons["laser"]["attackCD"] = self.weaponGetSpeed(self.weapons["laser"])
 
+    def essenceGetSpawnChance(self):
+        return self.game.player.essenceSpawnChance + self.game.spawn.wave * self.game.player.essenceSpawnChancePerWave + self.health[0] // 40 * self.game.data["upgrades"].get("cursedHealth", 0)
+
     def weaponGetDamage(self, weapon):
         answer = self.attackDamageMultiply * weapon["damage"]
 
         if self.armorGetAttackBonus and self.armor[0] > 0:
             answer *= 1.2
+
+        answer *= 1 + 0.01 * self.essenceGetSpawnChance() * self.upgrades.get("cursedDamage", 0)
 
         return answer
 
@@ -379,6 +400,9 @@ class Player(Entity):
 
         if weapon["type"] == "machineGun" and self.game.data["upgrades"]["machineGunMultiplySpeed"]:
             answer *= self.speedMultiply
+
+        if weapon["type"] == "machineGun" and self.game.data["upgrades"]["machineGunSpeed"]:
+            answer *= 0.9 ** sum([obj.settings.get("essence", 0) for obj in self.game.objects])
 
         if weapon["type"] == "base" and self.upgrades.get("doubleShot", 0):
             answer *= 0.7

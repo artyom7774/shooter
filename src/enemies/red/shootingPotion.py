@@ -10,8 +10,8 @@ import math
 
 
 class EnemyShootingPotionRed(Enemy):
-    def __init__(self, game, x, y, color, radius, width, speed, health, damage, xp):
-        Enemy.__init__(self, game, x, y, color, radius, width, speed, health, damage, xp)
+    def __init__(self, game, x, y, color, radius, width, speed, health, damage, xp, **kwargs):
+        Enemy.__init__(self, game, x, y, color, radius, width, speed, health, damage, xp, **kwargs)
 
     def update(self):
         super().update()
@@ -25,7 +25,7 @@ class EnemyShootingPotionRed(Enemy):
         self.vectors.append([angle, self.speed * speed, 0, [1, 0]])
 
         if distance / 800 < 1.2 and self.timer % 300 == 0:
-            self.game.objects.append(Bullet(self.game, self.x, self.y, Color.ENEMY_COLOR_RED, ENEMY_BULLET_RADIUS, 1, 2, self.target, "enemy", 100, 5, 0, random.randint(-5, 5), onDeath=lambda x, y: self.create(x, y)))
+            self.game.objects.append(Bullet(self.game, self.x, self.y, self.color, ENEMY_BULLET_RADIUS, 1, 2, self.target, "enemy", 100, self.damage, 0, random.randint(-5, 5), onDeath=lambda x, y: self.create(x, y)))
 
     def draw(self):
         cx = int(self.x - self.game.camera.x + self.game.width // 2)
@@ -46,4 +46,4 @@ class EnemyShootingPotionRed(Enemy):
         pygame.draw.polygon(self.game.screen, self.color, points, 1)
 
     def create(self, x, y):
-        self.game.objects.append(Bullet(self.game, x, y, (*Color.ENEMY_COLOR_RED, 40), 7 * ENEMY_BULLET_RADIUS, 0, 0, self.target, "enemy", 300, 5, 0, alreadyDied=False, damageCD=60))
+        self.game.objects.append(Bullet(self.game, x, y, (*self.color, 40), 7 * (1 + 0.5 * self.settings["essence"]) * ENEMY_BULLET_RADIUS, 0, 0, self.target, "enemy", 300, self.damage, 0, alreadyDied=False, damageCD=60))

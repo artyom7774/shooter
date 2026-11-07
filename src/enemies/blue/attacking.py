@@ -7,8 +7,8 @@ import math
 
 
 class EnemyAttackingBlue(Enemy):
-    def __init__(self, game, x, y, color, radius, width, speed, health, damage, xp):
-        Enemy.__init__(self, game, x, y, color, radius, width, speed, health, damage, xp)
+    def __init__(self, game, x, y, color, radius, width, speed, health, damage, xp, **kwargs):
+        Enemy.__init__(self, game, x, y, color, radius, width, speed, health, damage, xp, **kwargs)
 
         self.color = Color.ENEMY_COLOR_BLUE
 

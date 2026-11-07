@@ -3,8 +3,10 @@ import math
 
 
 class Entity:
-    def __init__(self, game, x, y, color, radius, width, speed):
+    def __init__(self, game, x, y, color, radius, width, speed, **kwargs):
         self.game = game
+
+        self.settings = kwargs
 
         self.x = x
         self.y = y

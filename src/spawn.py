@@ -3,7 +3,7 @@ from src.enemy import Enemy
 from src.variables import *
 
 from src.enemies import *
-from src.bosses import *
+from src.enemies.bosses import *
 
 import random
 import math
@@ -115,7 +115,7 @@ SPAWNED_ENEMIES = [
         "class": EnemyShootingBlue,
         "stats": {
             "health": [8, 8],
-            "damage": 5,
+            "damage": 8,
             "radius": 8,
             "xp": 25
         }
@@ -126,11 +126,22 @@ SPAWNED_ENEMIES = [
         "class": EnemyAttackingBlue,
         "stats": {
             "health": [13, 13],
-            "damage": 5,
+            "damage": 8,
             "radius": 8,
             "xp": 25
         }
     },
+    {
+        "point": 80,
+        "chance": 0.15,
+        "class": EnemyShootingAroundMaster,
+        "stats": {
+            "health": [40, 40],
+            "damage": 5,
+            "radius": 12,
+            "xp": 60
+        }
+    }
 ]
 
 SPAWNED_BOSSES = [
@@ -145,7 +156,7 @@ SPAWNED_BOSSES = [
         }
     },
     {
-        "point": 200,
+        "point": 150,
         "class": BossShootingTwo,
         "stats": {
             "health": [80, 80],
@@ -189,7 +200,17 @@ class Spawn:
             self.next()
 
     def spawn(self, x, y, enemy):
-        self.game.objects.append(enemy["class"](self.game, x, y, Color.ENEMY_COLOR_RED, enemy["stats"]["radius"], 1, math.sqrt(math.log2(self.wave) / 1.618 + 1), [int(enemy["stats"]["health"][0] * (1 + self.wave / ENEMYES_PROGRESSION_MYLTIPLY)), int(enemy["stats"]["health"][1] * (1 + self.wave / ENEMYES_PROGRESSION_MYLTIPLY))], int(enemy["stats"]["damage"] * (1 + self.wave / ENEMYES_PROGRESSION_MYLTIPLY)), enemy["stats"]["xp"]))
+        essence = False
+
+        if random.randint(0, 100) < self.game.player.essenceGetSpawnChance():
+            essence = True
+
+        enemy = enemy["class"](self.game, x, y, Color.ENEMY_COLOR_RED, enemy["stats"]["radius"], 1, math.sqrt(math.log2(self.wave) / 1.618 + 1) * (1 + 0.05 * self.game.data["upgrades"].get("cursedSpeed", 0)) * (1 + 0.1 * essence), [int(enemy["stats"]["health"][0] * (1 + essence) * (1 + self.wave / ENEMYES_PROGRESSION_MYLTIPLY))] * 2, int(enemy["stats"]["damage"] * (1 + 0.5 * essence) * (1 + self.wave / ENEMYES_PROGRESSION_MYLTIPLY)), enemy["stats"]["xp"], essence=essence)
+
+        if essence:
+            enemy.color = Color.ENEMY_COLOR_YELLOW
+
+        self.game.objects.append(enemy)
 
     def position(self):
         players = self.game.targets()
@@ -210,8 +231,7 @@ class Spawn:
 
         self.game.onNewWave(self.wave)
 
-        points = math.ceil((self.points * WAVE_BOSS_POINTS_CAPACITY if (self.wave % 5 == 0 and self.wave >= 10) else self.points) * random.uniform(*WAVE_RANDOM_POINTS_CAPACITY))
-        points = math.ceil(points * self.game.difficulty())
+        points = math.ceil(self.points * random.uniform(*WAVE_RANDOM_POINTS_CAPACITY) * self.game.difficulty())
 
         self.points *= WAVE_NEXT_CAPACITY
 

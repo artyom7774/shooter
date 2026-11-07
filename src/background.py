@@ -16,7 +16,14 @@ NOISE_PARAMS = {
 def background():
     import noise
 
+    RC = random.randint(100, 500) / 1000
+    GC = random.randint(100, 500) / 1000
+    BC = random.randint(600, 900) / 1000
+
     array = []
+
+    minV = 255
+    maxV = 0
 
     for y in range(NOISE_PARAMS["height"]):
         row = []
@@ -33,7 +40,10 @@ def background():
                 base=1
             )
 
-            color = int(min(180, max(0, int((value + 1) * 127.5))) * NOISE_PARAMS["bright"])
+            color = min(255, max(0, int((value + 1) * 127.5))) * NOISE_PARAMS["bright"]
+
+            minV = min(minV, color)
+            maxV = max(maxV, color)
 
             row.append(color)
 
@@ -43,9 +53,11 @@ def background():
 
     for y in range(NOISE_PARAMS["height"]):
         for x in range(NOISE_PARAMS["width"]):
-            color = array[y][x]
+            color = int((array[y][x] - minV) / (maxV - minV) * 60)
 
-            pixel.set_at((x, y), (color * 0.4, color * 0.1, color * 0.8))
+            # pixel.set_at((x, y), (color * 0.4, color * 0.1, color * 0.8))
+
+            pixel.set_at((x, y), (color * RC, color * GC, color * BC))
 
     temp = pygame.transform.scale(pixel, (NOISE_PARAMS["width"] * 5, NOISE_PARAMS["height"] * 5))
 
@@ -55,7 +67,7 @@ def background():
 
     points = []
 
-    for _ in range(1000):
+    for _ in range(1200):
         while True:
             x = random.randint(0, NOISE_PARAMS["width"] * 5)
             y = random.randint(0, NOISE_PARAMS["height"] * 5)

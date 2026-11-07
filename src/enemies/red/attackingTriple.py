@@ -5,8 +5,8 @@ import math
 
 
 class EnemyAttackingTripleRed(Enemy):
-    def __init__(self, game, x, y, color, radius, width, speed, health, damage, xp):
-        Enemy.__init__(self, game, x, y, color, radius, width, speed, health, damage, xp)
+    def __init__(self, game, x, y, color, radius, width, speed, health, damage, xp, **kwargs):
+        Enemy.__init__(self, game, x, y, color, radius, width, speed, health, damage, xp, **kwargs)
 
     def update(self):
         super().update()
@@ -19,10 +19,10 @@ class EnemyAttackingTripleRed(Enemy):
         if self.timer % 200 == 0:
             self.vectors.append([angle + random.randint(-5, 5), 15 * self.speed ** 0.3, 0.5])
 
-        if (self.timer + 40) % 200 == 0:
+        if (self.timer + 40 // (1 + self.settings["essence"])) % 200 == 0:
             self.vectors.append([angle + random.randint(-5, 5), 15 * self.speed ** 0.3, 0.5])
 
-        if (self.timer + 80) % 200 == 0:
+        if (self.timer + 80 // (1 + self.settings["essence"])) % 200 == 0:
             self.vectors.append([angle + random.randint(-5, 5), 15 * self.speed ** 0.3, 0.5])
 
         if math.sqrt((self.x - self.target.x) ** 2 + (self.y - self.target.y) ** 2) <= self.radius + self.target.radius:

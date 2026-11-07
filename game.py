@@ -77,6 +77,9 @@ class Data:
         if "crystal" not in data:
             data["crystal"] = 0
 
+        if "essence" not in data:
+            data["essence"] = 0
+
         if "upgrades" not in data:
             data["upgrades"] = {}
 
@@ -195,6 +198,9 @@ class Game:
     def onEnemyKilled(self, enemy):
         self.player.getExperience(enemy.xp)
 
+        if enemy.settings["essence"]:
+            self.player.resources["essence"] += math.ceil(enemy.health[1] / 12)
+
     def onNewWave(self, wave):
         self.render.waveCount.text = f"Wave: {wave}"
 
@@ -255,8 +261,8 @@ class Game:
 
         self.generate()
 
-        # from src.bosses import BossShootingTwo
-        # self.objects.append(BossShootingTwo(self, 100, 100, (255, 0, 0), 20, 1, 2, [200, 200], 5, 5))
+        # from src.bosses import BossShooting
+        # self.objects.append(BossShooting(self, 100, 100, (255, 0, 0), 13, 1, 2, [200, 200], 5, 5))
 
     def generate(self):
         self.resources = []
@@ -388,7 +394,7 @@ class Game:
             prec = (random.randint(-4, 4), random.randint(-4, 4)) if self.player.playerGetDamageCD > 0 and self.menu == "play" else (0, 0)
             self.display.blit(pygame.transform.scale_by(self.screen, self.capacity), prec)
 
-            # pygame.display.set_caption(f"{round(self.clock.get_fps())}")
+            pygame.display.set_caption(f"{NAME} - {round(self.clock.get_fps())}")
 
             pygame.display.update()
 

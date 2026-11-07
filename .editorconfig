@@ -6,7 +6,7 @@ end_of_line = crlf
 indent_size = 4
 indent_style = space
 insert_final_newline = false
-max_line_length = 120
+max_line_length = 400
 tab_width = 4
 
 [{*.har,*.json,*.jsonc,*.postman_collection,*.postman_collection.json,*.postman_environment,*.postman_environment.json}]

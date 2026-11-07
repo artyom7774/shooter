@@ -345,7 +345,9 @@ class Render:
         self.upgrades = {}
 
         self.pointsCount = None
+
         self.crystalCount = None
+        self.essenceCount = None
 
         self.mouseClickInfoText = TextField(self.game, (0, 0, self.game.width, self.game.height), "LMB - buy upgrade /n RMB - sell upgrade (no dependencies)", font_color=Color.PLAYER_COLOR, font_size=18, vertical="down", horizontal="left")
         self.anotherInfoText = TextField(self.game, (0, 0, self.game.width, self.game.height), "SHIFT - speed up", font_color=Color.PLAYER_COLOR, font_size=18, vertical="down", horizontal="right")
@@ -396,6 +398,9 @@ class Render:
 
         if self.game.data["upgrades"]["resources"] or self.game.data["crystal"] > 0:
             self.crystalCount = Label(self.game, (0, 20, self.game.width, self.game.height), f"Crystals: {self.game.data['crystal']}", font_color=Color.ITEM_CRYSTAL_COLOR, horizontal="left", vertical="up")
+
+        if self.game.data["upgrades"]["essence"] or self.game.data["essence"] > 0:
+            self.essenceCount = Label(self.game, (0, 40, self.game.width, self.game.height), f"Essence: {self.game.data['essence']}", font_color=Color.ITEM_ESSENCE_COLOR, horizontal="left", vertical="up")
 
     def background(self):
         global BACKGROUND
@@ -474,6 +479,9 @@ class Render:
 
         if self.crystalCount:
             self.crystalCount.draw()
+
+        if self.essenceCount:
+            self.essenceCount.draw()
 
         cx = self.game.camera.x - self.game.width // 2
         cy = self.game.camera.y - self.game.height // 2

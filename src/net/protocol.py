@@ -1,5 +1,5 @@
 from src.enemies import *
-from src.bosses import *
+from src.enemies.bosses import *
 
 PROTOCOL_VERSION = 1
 

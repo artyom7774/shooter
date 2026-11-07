@@ -9,8 +9,8 @@ import math
 
 
 class EnemyShootingTripleRed(Enemy):
-    def __init__(self, game, x, y, color, radius, width, speed, health, damage, xp):
-        Enemy.__init__(self, game, x, y, color, radius, width, speed, health, damage, xp)
+    def __init__(self, game, x, y, color, radius, width, speed, health, damage, xp, **kwargs):
+        Enemy.__init__(self, game, x, y, color, radius, width, speed, health, damage, xp, **kwargs)
 
     def update(self):
         super().update()
@@ -24,8 +24,8 @@ class EnemyShootingTripleRed(Enemy):
         self.vectors.append([angle, self.speed * speed, 0, [1, 0]])
 
         if distance / 500 < 1.2 and self.timer % 120 == 0:
-            for prec in range(-10, 10 + 10, 10):
-                self.game.objects.append(Bullet(self.game, self.x, self.y, Color.ENEMY_COLOR_RED, ENEMY_BULLET_RADIUS, 1, 2, self.target, "enemy", 300, 5, 0, prec))
+            for prec in range(-10 * (1 + self.settings["essence"]), 10 + 10 * (1 + self.settings["essence"]), 10):
+                self.game.objects.append(Bullet(self.game, self.x, self.y, self.color, ENEMY_BULLET_RADIUS, 1, 2, self.target, "enemy", 300, self.damage, 0, prec))
 
     def draw(self):
         cx = int(self.x - self.game.camera.x + self.game.width // 2)

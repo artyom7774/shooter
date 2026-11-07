@@ -24,6 +24,9 @@ class AttackDrone(Drone):
         if self.game.data["upgrades"]["dronesDependsDamage"]:
             answer *= max(1, sum([weapon["active"] * weapon["damage"] for weapon in self.game.player.weapons.values()]) / 5)
 
+        if self.game.data["upgrades"]["cursedStaminaRegeneration"]:
+            answer *= 0.05 * self.game.player.essenceGetSpawnChance()
+
         return answer
 
     def update(self):

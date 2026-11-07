@@ -11,15 +11,15 @@ import random
 
 
 class Enemy(Entity):
-    def __init__(self, game, x, y, color, radius, width, speed, health, damage, xp):
-        Entity.__init__(self, game, x, y, color, radius, width, speed)
+    def __init__(self, game, x, y, color, radius, width, speed, health, damage, xp, **kwargs):
+        Entity.__init__(self, game, x, y, color, radius, width, speed, **kwargs)
 
         self.health = health
         self.damage = damage
 
         self.xp = xp
 
-        self.healthBar = ProgressBar(self.game, 0, 0, 30, 5, (255, 255, 255), Color.ENEMY_COLOR_RED, (0, 0, 0), 1, 1, 3)
+        self.healthBar = ProgressBar(self.game, 0, 0, 30, 5, (255, 255, 255), self.color, (0, 0, 0), 1, 1, 3)
 
         self.history = {}
 

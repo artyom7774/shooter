@@ -9,6 +9,7 @@ from src.enemies.red.shooting import EnemyShootingRed
 from src.enemies.red.shootingAround import EnemyShootingAroundRed
 from src.enemies.red.shootingPotion import EnemyShootingPotionRed
 from src.enemies.red.shootingTriple import EnemyShootingTripleRed
+from src.enemies.red.shootingAroundMaster import EnemyShootingAroundMaster
 
 from src.enemies.blue.attacking import EnemyAttackingBlue
 

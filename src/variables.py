@@ -13,18 +13,21 @@ class Color:
     UPGRADE_PURPLE_COLOR = (240, 100, 210)
     UPGRADE_GRAY_COLOR = (120, 120, 120)
 
-    TREE_WHITE_COLOR = (245, 245, 245)
-    TREE_BLUE_COLOR = (70, 185, 200)
-
     PLAYER_COLOR = (245, 245, 245)
+
+    TREE_COLOR_WHITE = (245, 245, 245)
+    TREE_COLOR_BLUE = (70, 185, 200)
+    TREE_COLOR_YELLOW = (200, 185, 70)
 
     ENEMY_COLOR_RED = (200, 70, 70)
     ENEMY_COLOR_BLUE = (70, 70, 200)
+    ENEMY_COLOR_YELLOW = (200, 200, 70)
 
     TEXT_COLOR = (250, 250, 250)
     BASE_UI_COLOR = (220, 220, 220)
 
     ITEM_CRYSTAL_COLOR = (70, 185, 200)
+    ITEM_ESSENCE_COLOR = (200, 185, 70)
 
     DRONE_MINING_COLOR = (245, 245, 245)
     DRONE_ATTACK_COLOR = (245, 245, 245)
@@ -38,7 +41,6 @@ class Color:
 BACKGROUND = background()
 
 WAVE_RANDOM_POINTS_CAPACITY = [0.8, 1.2]
-WAVE_BOSS_POINTS_CAPACITY = 0.5
 WAVE_NEXT_CAPACITY = 1.35
 
 MAX_PARTICLES_COUNT = 10000
@@ -55,7 +57,7 @@ PLAYER_POINTS_MULTIPLY = 1.5
 
 TIMER_TO_NEW_WAVE = 100
 
-SPEED_UP_MODE = False
+SPEED_UP_MODE = 0
 
 UPGRADE_CELL_SIZE = 50
 
@@ -147,6 +149,17 @@ CHOOSES = {
         "open": False,
         "weight": 0.07,
         "max": 1
+    },
+
+    "purification": {
+        "code": "purification",
+        "name": "Purification",
+        "description": "Decrease chance to spawn cursed enemy by 5",
+        "function": "self.game.player.essenceSpawnChance -= 5",
+        "color": Color.UPGRADE_YELLOW_COLOR,
+        "open": False,
+        "weight": 0.1,
+        "max": 10
     },
 
     "armor": {
@@ -275,7 +288,8 @@ OPENS = {
     "unlockMachineGun": False,
     "unlockExplosive": False,
     "unlockLaser": False,
-    "laserAttackEveryFrame": False
+    "laserAttackEveryFrame": False,
+    "purification": False
 }
 
 """
@@ -317,7 +331,7 @@ UPGRADES = {
         "display": "Better health",
         "description": "Up health by 100 points",
         "symbol": "HP",
-        "color": Color.TREE_WHITE_COLOR,
+        "color": Color.TREE_COLOR_WHITE,
         "have": False,
         "cost": 100,
         "x": 0,
@@ -331,7 +345,7 @@ UPGRADES = {
         "display": "Bullets speed",
         "description": "Up bullets speed by 10% per level",
         "symbol": "SPD",
-        "color": Color.TREE_WHITE_COLOR,
+        "color": Color.TREE_COLOR_WHITE,
         "have": False,
         "x": -2,
         "y": 0,
@@ -348,7 +362,7 @@ UPGRADES = {
         "display": "Attack damage",
         "description": "Up attack damage by 20%",
         "symbol": "ATK",
-        "color": Color.TREE_WHITE_COLOR,
+        "color": Color.TREE_COLOR_WHITE,
         "have": False,
         "cost": 200,
         "x": 2,
@@ -362,7 +376,7 @@ UPGRADES = {
         "display": "Player speed",
         "description": "Up player speed by 10%",
         "symbol": "SPD",
-        "color": Color.TREE_WHITE_COLOR,
+        "color": Color.TREE_COLOR_WHITE,
         "have": False,
         "cost": 500,
         "x": 2,
@@ -376,7 +390,7 @@ UPGRADES = {
         "display": "Speed with stamina",
         "description": "Up player speed by 10% when stamina at 100%",
         "symbol": "SPD",
-        "color": Color.TREE_WHITE_COLOR,
+        "color": Color.TREE_COLOR_WHITE,
         "have": False,
         "cost": 1000,
         "x": 6,
@@ -390,7 +404,7 @@ UPGRADES = {
         "display": "Revival",
         "description": "Unlock upgrade that revives a character",
         "symbol": "UPG",
-        "color": Color.TREE_WHITE_COLOR,
+        "color": Color.TREE_COLOR_WHITE,
         "have": False,
         "cost": 500,
         "x": 4,
@@ -404,7 +418,7 @@ UPGRADES = {
         "display": "More XP",
         "description": "Player get +20% XP",
         "symbol": "XP",
-        "color": Color.TREE_WHITE_COLOR,
+        "color": Color.TREE_COLOR_WHITE,
         "have": False,
         "cost": 1000,
         "x": 2,
@@ -418,7 +432,7 @@ UPGRADES = {
         "display": "Stamina",
         "description": "Unlock player's stamina Displayed on the player",
         "symbol": "SKL",
-        "color": Color.TREE_WHITE_COLOR,
+        "color": Color.TREE_COLOR_WHITE,
         "have": False,
         "cost": 1000,
         "x": 6,
@@ -432,7 +446,7 @@ UPGRADES = {
         "display": "Dash",
         "description": "Unlock dash for player (use on space)",
         "symbol": "SKL",
-        "color": Color.TREE_WHITE_COLOR,
+        "color": Color.TREE_COLOR_WHITE,
         "have": False,
         "cost": 2000,
         "x": 8,
@@ -446,7 +460,7 @@ UPGRADES = {
         "display": "Weapons",
         "description": "Unlock weapons types, you have 2 unique weapons",
         "symbol": "SKL",
-        "color": Color.TREE_WHITE_COLOR,
+        "color": Color.TREE_COLOR_WHITE,
         "have": False,
         "cost": 3000,
         "x": 10,
@@ -460,7 +474,7 @@ UPGRADES = {
         "display": "Machine gun",
         "description": "Unlock weapon: machine gun",
         "symbol": "WP",
-        "color": Color.TREE_WHITE_COLOR,
+        "color": Color.TREE_COLOR_WHITE,
         "have": False,
         "cost": 5000,
         "x": 10,
@@ -474,7 +488,7 @@ UPGRADES = {
         "display": "Attack speed multiply",
         "description": "Attack speed of machine gun multiplied by player speed",
         "symbol": "ATK",
-        "color": Color.TREE_WHITE_COLOR,
+        "color": Color.TREE_COLOR_WHITE,
         "have": False,
         "cost": 5000,
         "x": 6,
@@ -488,7 +502,7 @@ UPGRADES = {
         "display": "Shotgun",
         "description": "Unlock weapon: shotgun",
         "symbol": "WP",
-        "color": Color.TREE_WHITE_COLOR,
+        "color": Color.TREE_COLOR_WHITE,
         "have": False,
         "cost": 2000,
         "x": 10,
@@ -502,7 +516,7 @@ UPGRADES = {
         "display": "Double shot",
         "description": "Unlock upgrade that reduces base attack speed by 30%",
         "symbol": "UPG",
-        "color": Color.TREE_WHITE_COLOR,
+        "color": Color.TREE_COLOR_WHITE,
         "have": False,
         "cost": 5000,
         "x": 12,
@@ -516,7 +530,7 @@ UPGRADES = {
         "display": "Explosive weapon",
         "description": "Unlock upgrade that get explosive base weapon",
         "symbol": "UPG",
-        "color": Color.TREE_WHITE_COLOR,
+        "color": Color.TREE_COLOR_WHITE,
         "have": False,
         "cost": 10000,
         "x": 10,
@@ -530,7 +544,7 @@ UPGRADES = {
         "display": "Pellet speed",
         "description": "Increase shotgun pellet speed",
         "symbol": "UPG",
-        "color": Color.TREE_WHITE_COLOR,
+        "color": Color.TREE_COLOR_WHITE,
         "have": False,
         "cost": 8000,
         "x": 10,
@@ -544,7 +558,7 @@ UPGRADES = {
         "display": "More weapon slots",
         "description": "Every 10 waves you get weapon slot",
         "symbol": "SKL",
-        "color": Color.TREE_WHITE_COLOR,
+        "color": Color.TREE_COLOR_WHITE,
         "have": False,
         "cost": 10000,
         "x": 12,
@@ -558,7 +572,7 @@ UPGRADES = {
         "display": "Weapons in first level",
         "description": "After first level you get weapon in chooses",
         "symbol": "SKL",
-        "color": Color.TREE_WHITE_COLOR,
+        "color": Color.TREE_COLOR_WHITE,
         "have": False,
         "cost": 5000,
         "x": 12,
@@ -572,7 +586,7 @@ UPGRADES = {
         "display": "Explosive",
         "description": "Unlock weapon: explosive",
         "symbol": "WP",
-        "color": Color.TREE_WHITE_COLOR,
+        "color": Color.TREE_COLOR_WHITE,
         "have": False,
         "cost": 10000,
         "x": 12,
@@ -586,7 +600,7 @@ UPGRADES = {
         "display": "Explosive weapon get XP",
         "description": "If enemy destroyed by explosive you get more xp",
         "symbol": "XP",
-        "color": Color.TREE_WHITE_COLOR,
+        "color": Color.TREE_COLOR_WHITE,
         "have": False,
         "cost": 15000,
         "x": 14,
@@ -600,7 +614,7 @@ UPGRADES = {
         "display": "No damage while dashing",
         "description": "Unlock upgrade for player not take damage while dashing",
         "symbol": "UPG",
-        "color": Color.TREE_WHITE_COLOR,
+        "color": Color.TREE_COLOR_WHITE,
         "have": False,
         "cost": 3000,
         "x": 8,
@@ -614,7 +628,7 @@ UPGRADES = {
         "display": "Drones",
         "description": "Drones can mine resources, attack and etc.",
         "symbol": "SKL",
-        "color": Color.TREE_WHITE_COLOR,
+        "color": Color.TREE_COLOR_WHITE,
         "have": False,
         "cost": 10000,
         "x": 14,
@@ -628,7 +642,7 @@ UPGRADES = {
         "display": "Mining drones",
         "description": "You have 1 more mining drone",
         "symbol": "SKL",
-        "color": Color.TREE_WHITE_COLOR,
+        "color": Color.TREE_COLOR_WHITE,
         "have": False,
         "x": 16,
         "y": 0,
@@ -645,7 +659,7 @@ UPGRADES = {
         "display": "Resources",
         "description": "Spawn resources in world, but you can't mine it",
         "symbol": "SKL",
-        "color": Color.TREE_WHITE_COLOR,
+        "color": Color.TREE_COLOR_WHITE,
         "have": False,
         "cost": 1000,
         "x": 14,
@@ -657,9 +671,9 @@ UPGRADES = {
         "dependencies": ["resources"],
         "function": "",
         "display": "More resources",
-        "description": "In game spawne more resources",
+        "description": "In game spawn more resources",
         "symbol": "SKL",
-        "color": Color.TREE_WHITE_COLOR,
+        "color": Color.TREE_COLOR_WHITE,
         "have": False,
         "cost": 10000,
         "x": 14,
@@ -673,7 +687,7 @@ UPGRADES = {
         "display": "Resource multiply",
         "description": "+100% resource multiply from drones",
         "symbol": "SKL",
-        "color": Color.TREE_BLUE_COLOR,
+        "color": Color.TREE_COLOR_BLUE,
         "have": False,
         "cost": 10,
         "x": 18,
@@ -689,7 +703,7 @@ UPGRADES = {
         "display": "Mining drones for waves",
         "description": "Every 5 waves you get 1 mining drone",
         "symbol": "SKL",
-        "color": Color.TREE_BLUE_COLOR,
+        "color": Color.TREE_COLOR_BLUE,
         "have": False,
         "cost": 25,
         "x": 18,
@@ -705,7 +719,7 @@ UPGRADES = {
         "display": "Drones stats",
         "description": "You get +1% health, xp multiply, points multiply for every player drone",
         "symbol": "SKL",
-        "color": Color.TREE_BLUE_COLOR,
+        "color": Color.TREE_COLOR_BLUE,
         "have": False,
         "cost": 50,
         "x": 20,
@@ -721,7 +735,7 @@ UPGRADES = {
         "display": "Armor",
         "description": "Unlock armor for player, armor regenerate every wave",
         "symbol": "SKL",
-        "color": Color.TREE_BLUE_COLOR,
+        "color": Color.TREE_COLOR_BLUE,
         "have": False,
         "cost": 100,
         "x": 20,
@@ -737,7 +751,7 @@ UPGRADES = {
         "display": "Armor upgrade",
         "description": "Unlock an upgrade to improve your armor",
         "symbol": "UPG",
-        "color": Color.TREE_BLUE_COLOR,
+        "color": Color.TREE_COLOR_BLUE,
         "have": False,
         "cost": 200,
         "x": 22,
@@ -753,7 +767,7 @@ UPGRADES = {
         "display": "Laser",
         "description": "Unlock weapon: laser",
         "symbol": "WP",
-        "color": Color.TREE_BLUE_COLOR,
+        "color": Color.TREE_COLOR_BLUE,
         "have": False,
         "cost": 250,
         "x": 20,
@@ -769,7 +783,7 @@ UPGRADES = {
         "display": "Laser arrack every tick",
         "description": "Unlock upgrade for laser that deal damage every frame",
         "symbol": "UPG",
-        "color": Color.TREE_BLUE_COLOR,
+        "color": Color.TREE_COLOR_BLUE,
         "have": False,
         "cost": 400,
         "x": 20,
@@ -785,7 +799,7 @@ UPGRADES = {
         "display": "Fast weapon reload",
         "description": "Weapons that take longer than 2 seconds to reload receive +20% reload speed",
         "symbol": "SKL",
-        "color": Color.TREE_BLUE_COLOR,
+        "color": Color.TREE_COLOR_BLUE,
         "have": False,
         "cost": 500,
         "x": 12,
@@ -801,7 +815,7 @@ UPGRADES = {
         "display": "Drones multiply resources",
         "description": "+35% resource multiply for every mining drone",
         "symbol": "SKL",
-        "color": Color.TREE_BLUE_COLOR,
+        "color": Color.TREE_COLOR_BLUE,
         "have": False,
         "cost": 50,
         "x": 18,
@@ -817,7 +831,7 @@ UPGRADES = {
         "display": "Attack drones",
         "description": "You have 1 more attack drone",
         "symbol": "SKL",
-        "color": Color.TREE_BLUE_COLOR,
+        "color": Color.TREE_COLOR_BLUE,
         "have": False,
         "x": 22,
         "y": 0,
@@ -833,9 +847,9 @@ UPGRADES = {
         "dependencies": ["dronesStats", "resources"],
         "function": "",
         "display": "Duplicate resource",
-        "description": "You get +5% chance duplicate resource for every drone",
+        "description": "You get +5% chance duplicate resource per every drone",
         "symbol": "SKL",
-        "color": Color.TREE_BLUE_COLOR,
+        "color": Color.TREE_COLOR_BLUE,
         "have": False,
         "cost": 100,
         "x": 20,
@@ -851,7 +865,7 @@ UPGRADES = {
         "display": "Class information",
         "description": "You can choose only one class. Choosing a class gives both positive and negative abilities",
         "symbol": "I",
-        "color": Color.TREE_WHITE_COLOR,
+        "color": Color.TREE_COLOR_WHITE,
         "have": False,
         "cost": 0,
         "x": 8,
@@ -865,7 +879,7 @@ UPGRADES = {
         "display": "Warrior",
         "description": "Open class: warrior /n When you dashing in enemy you deals damage equals sum of all using weapons. Attack speed: -30%",
         "symbol": "C",
-        "color": Color.TREE_WHITE_COLOR,
+        "color": Color.TREE_COLOR_WHITE,
         "have": False,
         "cost": 5000,
         "x": 8,
@@ -879,7 +893,7 @@ UPGRADES = {
         "display": "Stamina regeneration",
         "description": "+200% stamina regeneration",
         "symbol": "SKL",
-        "color": Color.TREE_WHITE_COLOR,
+        "color": Color.TREE_COLOR_WHITE,
         "have": False,
         "cost": 10000,
         "x": 6,
@@ -889,11 +903,11 @@ UPGRADES = {
     "engineer": {
         "code": "engineer",
         "dependencies": ["attackDrones"],
-        "function": "self.dronesAttackMultiply *= 1.3; self.attackDamageMultiply *= 0.2; self.dronesTypes['attack'] += 1; self.dronesTypes['mining'] += 3;",
+        "function": "self.dronesAttackMultiply *= 1.3; self.attackDamageMultiply *= 0.2; self.dronesTypes['attack'] += 1; self.dronesTypes['mining'] += 2;",
         "display": "Engineer",
-        "description": "Open class: engineer /n +30% Drones damage /n -80% Attack damage /n +3 Mining drones /n +1 Attack drone",
+        "description": "Open class: engineer /n +30% Drones damage /n -80% Attack damage /n +2 Mining drones /n +1 Attack drone",
         "symbol": "C",
-        "color": Color.TREE_BLUE_COLOR,
+        "color": Color.TREE_COLOR_BLUE,
         "have": False,
         "cost": 300,
         "x": 24,
@@ -909,7 +923,7 @@ UPGRADES = {
         "display": "Drones depends damage",
         "description": "Drones damage depends sum of all using weapons",
         "symbol": "SKL",
-        "color": Color.TREE_BLUE_COLOR,
+        "color": Color.TREE_COLOR_BLUE,
         "have": False,
         "cost": 500,
         "x": 26,
@@ -925,7 +939,7 @@ UPGRADES = {
         "display": "Garden",
         "description": "Open garden",
         "symbol": "SKL",
-        "color": Color.TREE_WHITE_COLOR,
+        "color": Color.TREE_COLOR_WHITE,
         "have": False,
         "cost": 1000,
         "x": 6,
@@ -939,7 +953,7 @@ UPGRADES = {
         "display": "",
         "description": "",
         "symbol": "",
-        "color": Color.TREE_WHITE_COLOR,
+        "color": Color.TREE_COLOR_WHITE,
         "have": False,
         "cost": 0,
         "size": 3,
@@ -952,5 +966,202 @@ UPGRADES = {
             "slot": "0",
             "cost": 100
         }
-    }
+    },
+
+    "essence": {
+        "code": "essence",
+        "dependencies": ["machineGun"],
+        "function": "self.essenceSpawnChance += 5",
+        "display": "Cursed world",
+        "description": "Get 5% chance to spawn cursed enemy, what have more health and damage. He dropping essence",
+        "symbol": "SKL",
+        "color": Color.TREE_COLOR_WHITE,
+        "have": False,
+        "cost": 5000,
+        "x": 10,
+        "y": -6
+    },
+
+    "cursedChancePerWave": {
+        "code": "cursedChancePerWave",
+        "dependencies": ["essence"],
+        "function": "self.essenceSpawnChancePerWave += 1",
+        "display": "Cursed enemies per wave",
+        "description": "Every wave you get +1% chance to spawn cursed enemy",
+        "symbol": "SKL",
+        "color": Color.TREE_COLOR_YELLOW,
+        "have": False,
+        "cost": 25,
+        "x": 12,
+        "y": -6,
+
+        "request": "essence"
+    },
+
+    "cursedDamage": {
+        "code": "cursedDamage",
+        "dependencies": ["essence"],
+        "function": "",
+        "display": "Cursed damage",
+        "description": "You get +1% damage per chance to spawn cursed enemy",
+        "symbol": "SKL",
+        "color": Color.TREE_COLOR_YELLOW,
+        "have": False,
+        "x": 10,
+        "y": -8,
+
+        "request": "essence",
+
+        "type": "many",
+        "limit": 2,
+        "cost": [100, 1000]
+    },
+
+    "cursedStaminaRegeneration": {
+        "code": "cursedStaminaRegeneration",
+        "dependencies": ["cursedChancePerWave"],
+        "function": "self.staminaRegeneration *= 2",
+        "display": "Stamina regeneration",
+        "description": "+100% stamina regeneration",
+        "symbol": "SKL",
+        "color": Color.TREE_COLOR_YELLOW,
+        "have": False,
+        "cost": 50,
+        "x": 12,
+        "y": -8,
+
+        "request": "essence"
+    },
+
+    "cursedAttackDroneDamage": {
+        "code": "cursedAttackDroneDamage",
+        "dependencies": ["cursedChancePerWave", "attackDrones"],
+        "function": "",
+        "display": "Attack drone damage",
+        "description": "+5% attack drone damage per chance to spawn cursed enemy",
+        "symbol": "SKL",
+        "color": Color.TREE_COLOR_YELLOW,
+        "have": False,
+        "cost": 100,
+        "x": 22,
+        "y": -6,
+
+        "request": "essence"
+    },
+
+    "machineGunSpeed": {
+        "code": "machineGunSpeed",
+        "dependencies": ["cursedDamage"],
+        "function": "",
+        "display": "Machine gun speed",
+        "description": "Machine gun get +10% speed for every cursed enemy on map",
+        "symbol": "SKL",
+        "color": Color.TREE_COLOR_YELLOW,
+        "have": False,
+        "cost": 250,
+        "x": 10,
+        "y": -10,
+
+        "request": "essence"
+    },
+
+    "cursedDecrease": {
+        "code": "cursedDecrease",
+        "dependencies": ["machineGunSpeed"],
+        "function": "CHOOSES['purification']['open'] = True",
+        "display": "Purification",
+        "description": "Unlock upgrade what decrease chance to spawn cursed enemy by 5",
+        "symbol": "UPG",
+        "color": Color.TREE_COLOR_YELLOW,
+        "have": False,
+        "cost": 100,
+        "x": 0,
+        "y": -10,
+
+        "request": "essence"
+    },
+
+    "cursedBulletsSpeed": {
+        "code": "cursedBulletsSpeed",
+        "dependencies": ["bulletsSpeed", "cursedDecrease"],
+        "function": "self.bulletsSpeed *= 1 + 0.2 * self.game.data['upgrades']['cursedBulletsSpeed']",
+        "display": "Cursed bullets",
+        "description": "Up bullets speed by 20% per level",
+        "symbol": "SPD",
+        "color": Color.TREE_COLOR_YELLOW,
+        "have": False,
+        "x": -2,
+        "y": -10,
+
+        "request": "essence",
+
+        "type": "many",
+        "limit": 2,
+        "cost": [100, 500],
+    },
+
+    "cursedSpeed": {
+        "code": "cursedSpeed",
+        "dependencies": ["cursedDecrease"],
+        "function": "self.speedMultiply *= 1 + 0.05 * self.game.data['upgrades']['cursedSpeed']",
+        "display": "Cursed speed",
+        "description": "Up speed by 5% per level",
+        "symbol": "SPD",
+        "color": Color.TREE_COLOR_YELLOW,
+        "have": False,
+        "x": 0,
+        "y": -8,
+
+        "request": "essence",
+
+        "type": "many",
+        "limit": 4,
+        "cost": [100, 200, 500, 1000],
+    },
+
+    "cursedHealth": {
+        "code": "cursedHealth",
+        "dependencies": ["health", "cursedSpeed"],
+        "function": "self.health = [self.health[0] + 200, self.health[1] + 200]",
+        "display": "Cursed health",
+        "description": "Up health by 200 points, but every 40 health you get 1% chance to spawn cursed enemy",
+        "symbol": "HP",
+        "color": Color.TREE_COLOR_YELLOW,
+        "have": False,
+        "cost": 250,
+        "x": 0,
+        "y": -6,
+
+        "request": "essence"
+    },
+
+    "cursed": {
+        "code": "cursed",
+        "dependencies": ["machineGunSpeed"],
+        "function": "self.clazz = 'cursed'; self.essenceSpawnChance += 30; self.speedMultiply *= 1.2",
+        "display": "Cursed",
+        "description": "Open class: cursed /n +20% player speed /n +30% chance to spawn cursed enemy /n armor not working",
+        "symbol": "C",
+        "color": Color.TREE_COLOR_YELLOW,
+        "have": False,
+        "cost": 300,
+        "x": 10,
+        "y": -12,
+
+        "request": "essence"
+    },
+
+    "sniper": {
+        "code": "sniper",
+        "dependencies": ["explosiveWeaponGetXP"],
+        "function": "self.clazz = 'sniper'; self.attackDamageMultiply *= 2; self.attackSpeedMultiply *= 0.7",
+        "display": "Sniper",
+        "description": "Open class: sniper /n +100% attack damage /n +30% attack speed /n weapons not recharging while you running",
+        "symbol": "C",
+        "color": Color.TREE_COLOR_WHITE,
+        "have": False,
+        "cost": 10000,
+        "x": 14,
+        "y": 6
+    },
 }
