@@ -22,7 +22,7 @@ class BossShooting(Enemy):
 
         # self.vectors.append([angle, speed / 2, 0, [1, 0]])
 
-        if distance / 800 < 1.2 and self.timer % 9 == 0:
+        if distance / 800 < 1.2 and self.timer % (9 - 2 * self.settings.get("essence", 0)) == 0:
             self.game.objects.append(Bullet(self.game, self.x, self.y, self.color, ENEMY_BULLET_RADIUS, 1, 2, None, "enemy", 300, self.damage, 0, self.timer % 360 + 0))
             self.game.objects.append(Bullet(self.game, self.x, self.y, self.color, ENEMY_BULLET_RADIUS, 1, 2, None, "enemy", 300, self.damage, 0, self.timer % 360 + 90))
             self.game.objects.append(Bullet(self.game, self.x, self.y, self.color, ENEMY_BULLET_RADIUS, 1, 2, None, "enemy", 300, self.damage, 0, self.timer % 360 + 180))

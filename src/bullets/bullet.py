@@ -144,6 +144,9 @@ class Bullet(Entity):
                 if isinstance(cobj, Bullet):
                     continue
 
+                if not hasattr(cobj, "getDamage"):
+                    continue
+
                 if math.sqrt((self.x + px - cobj.x) ** 2 + (self.y + py - cobj.y) ** 2) <= 20:
                     xp = cobj.xp
 

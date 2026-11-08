@@ -33,7 +33,8 @@ class Laser(Entity):
         self.liveTime = liveTime
         self.toDestroy = False
 
-        self.target.getDamage(self.damage)
+        if hasattr(self.target, "getDamage"):
+            self.target.getDamage(self.damage)
 
     def draw(self):
         cpos = (self.x - self.game.camera.x + self.game.width // 2, self.y - self.game.camera.y + self.game.height // 2)
@@ -67,7 +68,7 @@ class Laser(Entity):
 
                 self.jumps = 0
 
-        if self.game.player.upgrades.get("laserAttackEveryFrame", 0):
+        if self.game.player.upgrades.get("laserAttackEveryFrame", 0) and hasattr(self.target, "getDamage"):
             self.target.getDamage(self.damage / 100)
 
         if self.live >= self.liveTime or self.toDestroy:

@@ -5,6 +5,7 @@ from src.variables import *
 from src.enemies import *
 from src.enemies.bosses import *
 
+import typing
 import random
 import math
 
@@ -149,17 +150,27 @@ SPAWNED_BOSSES = [
         "point": 50,
         "class": BossShooting,
         "stats": {
-            "health": [50, 50],
+            "health": [100, 100],
             "damage": 5,
             "radius": 13,
             "xp": 100
         }
     },
     {
-        "point": 150,
-        "class": BossShootingTwo,
+        "point": 50,
+        "class": BossAttacking,
         "stats": {
-            "health": [80, 80],
+            "health": [100, 100],
+            "damage": 5,
+            "radius": 13,
+            "xp": 100
+        }
+    },
+    {
+        "point": 50,
+        "class": BossShootingThree,
+        "stats": {
+            "health": [100, 100],
             "damage": 5,
             "radius": 13,
             "xp": 250
@@ -199,13 +210,16 @@ class Spawn:
         if count == 0 and self.timerToNewWave == 0:
             self.next()
 
-    def spawn(self, x, y, enemy):
+    def spawn(self, x, y, enemy, death: typing.Callable = None):
         essence = False
 
         if random.randint(0, 100) < self.game.player.essenceGetSpawnChance():
             essence = True
 
-        enemy = enemy["class"](self.game, x, y, Color.ENEMY_COLOR_RED, enemy["stats"]["radius"], 1, math.sqrt(math.log2(self.wave) / 1.618 + 1) * (1 + 0.05 * self.game.data["upgrades"].get("cursedSpeed", 0)) * (1 + 0.1 * essence), [int(enemy["stats"]["health"][0] * (1 + essence) * (1 + self.wave / ENEMYES_PROGRESSION_MYLTIPLY))] * 2, int(enemy["stats"]["damage"] * (1 + 0.5 * essence) * (1 + self.wave / ENEMYES_PROGRESSION_MYLTIPLY)), enemy["stats"]["xp"], essence=essence)
+        enemy = enemy["class"](self.game, x, y, Color.ENEMY_COLOR_RED, enemy["stats"]["radius"], 1, math.sqrt(math.log2(1 + self.wave) / 1.618 + 1) * (1 + 0.05 * self.game.data["upgrades"].get("cursedSpeed", 0)) * (1 + 0.1 * essence), [int(enemy["stats"]["health"][0] * (1 + essence) * (1 + self.wave / ENEMYES_PROGRESSION_MYLTIPLY))] * 2, int(enemy["stats"]["damage"] * (1 + 0.5 * essence) * (1 + self.wave / ENEMYES_PROGRESSION_MYLTIPLY)), enemy["stats"]["xp"], essence=essence, **enemy["stats"].get("another", {}))
+
+        if death:
+            enemy.onDeath = death
 
         if essence:
             enemy.color = Color.ENEMY_COLOR_YELLOW

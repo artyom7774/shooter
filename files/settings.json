@@ -1,6 +1,6 @@
 {
     "audio": {
-        "master": 1
+        "master": 0.25
     },
     "online": {
         "enabled": false,

@@ -198,7 +198,7 @@ class Game:
     def onEnemyKilled(self, enemy):
         self.player.getExperience(enemy.xp)
 
-        if enemy.settings["essence"]:
+        if enemy.settings.get("essence", False):
             self.player.resources["essence"] += math.ceil(enemy.health[1] / 12)
 
     def onNewWave(self, wave):
@@ -261,8 +261,8 @@ class Game:
 
         self.generate()
 
-        # from src.bosses import BossShooting
-        # self.objects.append(BossShooting(self, 100, 100, (255, 0, 0), 13, 1, 2, [200, 200], 5, 5))
+        # from src.enemies.bosses import BossSpawning
+        # self.objects.append(BossSpawning(self, 100, 100, Color.ENEMY_COLOR_RED, 13, 1, 2, [50, 50], 5, 5))
 
     def generate(self):
         self.resources = []
